@@ -1,25 +1,23 @@
-
-import { Container, Row, Col } from 'react-bootstrap';
-import './App.css';
-import WaitingRoom from './components/WaitingRoom';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState } from 'react';
-import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
+import { Container, Row, Col } from 'react-bootstrap';
+import * as signalR from "@microsoft/signalr";
+import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import WaitingRoom from './components/WaitingRoom';
 import ChatRoom from './components/ChatRoom';
 
 function App() {
 
   const[conn, setConnection] = useState();
-  const[messages, setMessages] = useState();
+  const[room, setChatRoom] = useState();
+  const[messages, setMessages] = useState([]);
 
   const joinChatRoom = async (username, chatroom) => {
 
-    try {
-      const conn = new HubConnectionBuilder()
-                  .withUrl("http://localhost:5202/chat", {
-                    withCredentials: true //  <-- ADD THIS
-                  })
-                  .configureLogging(LogLevel.Information)
+    try {  
+      const conn = new signalR.HubConnectionBuilder()
+                  .withUrl("http://localhost:5202/chat")
+                  .configureLogging(signalR.LogLevel.Information)
                   .build();
 
       conn.on("JoinSpecificChatRoom", (username, msg) => {
@@ -50,6 +48,14 @@ function App() {
     }
   }
 
+  const sendMessage = async(message) => {
+    try {
+      await conn.invoke("SendMessage", message);
+    } catch(e) {
+      console.log(e);
+    }
+  }
+
   return (
     <div>
       <main>
@@ -61,7 +67,7 @@ function App() {
           </Row>
           { !conn
             ? <WaitingRoom joinChatRoom={joinChatRoom}></WaitingRoom>
-            : <ChatRoom messages={messages}></ChatRoom>
+            : <ChatRoom messages={messages} sendMessage={sendMessage}></ChatRoom>
           }
         </Container>
       </main>

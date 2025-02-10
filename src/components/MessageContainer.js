@@ -1,6 +1,6 @@
 import React from 'react';
 
-const MessageContainer =({messages}) => {
+const MessageContainer = ({messages}) => {
     return <div>
         {
             messages.map((msg, index) => 
@@ -15,18 +15,3 @@ const MessageContainer =({messages}) => {
 }
 
 export default MessageContainer;
-
-/* 
-<div>
-            <Table striped bordered>
-                <tbody>
-                    {usermessages.map((msg, index) => (
-                        <tr key={index}>
-                            <td>{msg.user} - {msg.message}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </Table>
-        </div>
-
-*/
